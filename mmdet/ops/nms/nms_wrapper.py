@@ -50,6 +50,7 @@ def nms(dets, iou_thr, device_id=None):
 
 
 def soft_nms(dets, iou_thr, method='linear', sigma=0.5, min_score=1e-3):
+    from .soft_nms_cpu import soft_nms_cpu
     if isinstance(dets, torch.Tensor):
         is_tensor = True
         dets_np = dets.detach().cpu().numpy()
