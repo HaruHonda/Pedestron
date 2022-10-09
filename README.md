@@ -1,14 +1,15 @@
 <!--[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/pedestrian-detection-the-elephant-in-the-room/pedestrian-detection-on-citypersons)](https://paperswithcode.com/sota/pedestrian-detection-on-citypersons?p=pedestrian-detection-the-elephant-in-the-room)
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/pedestrian-detection-the-elephant-in-the-room/pedestrian-detection-on-caltech)](https://paperswithcode.com/sota/pedestrian-detection-on-caltech?p=pedestrian-detection-the-elephant-in-the-room)-->
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/pedestrian-detection-the-elephant-in-the-room/pedestrian-detection-on-caltech)](https://paperswithcode.com/sota/pedestrian-detection-on-caltech?p=pedestrian-detection-the-elephant-in-the-room)
 
 
 # Pedestron
 <img title="Amsterdam" src="gifs/1.gif" width="400" /> <img title="Amsterdam" src="gifs/2.gif" width="400"/>
 <img title="Amsterdam" src="gifs/3.gif" width="400"/> <img title="Amsterdam" src="gifs/4.gif" width="400"/>
 
+-->
 
-F2DNet is a Pedestron based repository which implements a novel, two-staged detector i.e. Fast Focal Detection Network for pedestrian detection.
+This is a Pedestron based repository which implements a novel, two-staged detector i.e. CBNet and Progressive training pipeline for pedestrian detection.
 
 [Pedestron](https://128.84.21.199/pdf/2003.08799.pdf) is a [MMdetection](https://github.com/open-mmlab/mmdetection) based repository, that focuses on the advancement of research on pedestrian detection. We provide a list of detectors, both general purpose and pedestrian specific to train and test. Moreover, we provide pre-trained models and benchmarking of several detectors on different pedestrian detection datasets. Additionally, we provide processed annotations and scripts to process the annotation of different pedestrian detection benchmarks. If you use Pedestron, please cite us (see at the end) and other respective sources.
 
