@@ -1,7 +1,7 @@
 # model settings
 # 2022 08 27
 # fp16 settings
-fp16 = dict(loss_scale=512.)
+#fp16 = dict(loss_scale=512.)
 model = dict(
     type="CascadeRCNN",
     num_stages=3,
@@ -214,18 +214,18 @@ data = dict(
         # with_mask=True,
         with_crowd=True,
         with_label=True,
-        # extra_aug=dict(
-        #    photo_metric_distortion=dict(
-        #        brightness_delta=180,
-        #        contrast_range=(0.5, 1.5),
-        #        saturation_range=(0.5, 1.5),
-        #       hue_delta=18,
-        #    ),
-        #    random_crop=dict(
-        #        min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-        #        min_crop_size=0.1,
-        #    ),
-        # ),
+        extra_aug=dict(
+            photo_metric_distortion=dict(
+                brightness_delta=180,
+                contrast_range=(0.5, 1.5),
+                saturation_range=(0.5, 1.5),
+                hue_delta=18,
+            ),
+            random_crop=dict(
+                min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+                min_crop_size=0.1,
+            ),
+         ),
     ),
     # val=dict(
     #    type=dataset_type,
@@ -256,7 +256,7 @@ data = dict(
 mean_teacher = True
 optimizer = dict(type="SGD", lr=0.005, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(
-    grad_clip=dict(max_norm=35, norm_type=2)  # , mean_teacher=dict(alpha=0.999)
+    grad_clip=dict(max_norm=35, norm_type=2) , mean_teacher=dict(alpha=0.999)
 )
 # learning policy
 lr_config = dict(
