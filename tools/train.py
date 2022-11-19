@@ -7,16 +7,9 @@ from mmcv import Config
 
 from mmdet import __version__
 from mmdet.datasets import build_dataset
-from mmdet.apis import (train_detector, init_dist, get_root_logger,
-                        set_random_seed)
+from mmdet.apis import (train_detector, init_dist, get_root_logger, set_random_seed)
 from mmdet.models import build_detector
 import torch
-
-#import copy
-#import os.path as osp
-#import time
-#import mmcv
-#from mmdet.utils import collect_env, get_root_logger
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')

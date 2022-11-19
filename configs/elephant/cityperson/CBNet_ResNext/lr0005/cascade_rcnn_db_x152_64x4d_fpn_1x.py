@@ -1,16 +1,13 @@
 # model settings
-# 2022 08 27
-# fp16 settings
-#fp16 = dict(loss_scale=512.)
-#import multiprocessing as mp
+# 2022 08 22
 model = dict(
     type='CascadeRCNN',
     num_stages=3,
-    #pretrained='tb-x101-32-4d.pth',
     pretrained=None,
+    #pretrained='db-x152-64-4d.pth',
     backbone=dict(
-        type='TB_ResNeXt',
-        depth=101,
+        type='DB_ResNeXt',
+        depth=152,
         groups=64,
         base_width=4,
         num_stages=4,
@@ -91,10 +88,8 @@ model = dict(
             loss_bbox=dict(
                 type='SmoothL1Loss',
                 beta=1.0,
-                loss_weight=1.0),
-        )
-    ],
-)
+                loss_weight=1.0))
+        ])
 # model training and testing settings
 train_cfg = dict(
     rpn=dict(
@@ -103,27 +98,23 @@ train_cfg = dict(
             pos_iou_thr=0.7,
             neg_iou_thr=0.3,
             min_pos_iou=0.3,
-            ignore_iof_thr=-1,
-        ),
+            ignore_iof_thr=-1),
         sampler=dict(
             type='RandomSampler',
             num=256,
             pos_fraction=0.5,
             neg_pos_ub=-1,
-            add_gt_as_proposals=False,
-        ),
+            add_gt_as_proposals=False),
         allowed_border=0,
         pos_weight=-1,
-        debug=False,
-    ),
+        debug=False),
     rpn_proposal=dict(
         nms_across_levels=False,
         nms_pre=2000,
         nms_post=2000,
         max_num=2000,
         nms_thr=0.7,
-        min_bbox_size=0,
-    ),
+        min_bbox_size=0),
     rcnn=[
         dict(
             assigner=dict(
@@ -131,57 +122,47 @@ train_cfg = dict(
                 pos_iou_thr=0.5,
                 neg_iou_thr=0.5,
                 min_pos_iou=0.5,
-                ignore_iof_thr=-1,
-            ),
+                ignore_iof_thr=-1),
             sampler=dict(
                 type='RandomSampler',
                 num=512,
                 pos_fraction=0.25,
                 neg_pos_ub=-1,
-                add_gt_as_proposals=True,
-            ),
+                add_gt_as_proposals=True),
             pos_weight=-1,
-            debug=False,
-        ),
+            debug=False),
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
                 pos_iou_thr=0.6,
                 neg_iou_thr=0.6,
                 min_pos_iou=0.6,
-                ignore_iof_thr=-1,
-            ),
+                ignore_iof_thr=-1),
             sampler=dict(
                 type='RandomSampler',
                 num=512,
                 pos_fraction=0.25,
                 neg_pos_ub=-1,
-                add_gt_as_proposals=True
-            ),
+                add_gt_as_proposals=True),
             pos_weight=-1,
-            debug=False
-        ),
+            debug=False),
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
                 pos_iou_thr=0.7,
                 neg_iou_thr=0.7,
                 min_pos_iou=0.7,
-                ignore_iof_thr=-1,
-            ),
+                ignore_iof_thr=-1),
             sampler=dict(
                 type='RandomSampler',
                 num=512,
                 pos_fraction=0.25,
                 neg_pos_ub=-1,
-                add_gt_as_proposals=True
-            ),
+                add_gt_as_proposals=True),
             pos_weight=-1,
-            debug=False,
-        ),
-    ],
-    stage_loss_weights=[1, 0.5, 0.25]
-)
+            debug=False)
+        ],
+        stage_loss_weights=[1, 0.5, 0.25])
 test_cfg = dict(
     rpn=dict(
         nms_across_levels=False,
@@ -189,80 +170,61 @@ test_cfg = dict(
         nms_post=1000,
         max_num=1000,
         nms_thr=0.7,
-        min_bbox_size=0,
-    ),
+        min_bbox_size=0),
     rcnn=dict(
-        score_thr=0.05, nms=dict(type='nms', iou_thr=0.5), max_per_img=100,
-    ),
+        score_thr=0.05, nms=dict(type='nms', iou_thr=0.5), max_per_img=100),
     # 下記一行追加 pedestron/config/cascade_rcnn_x10_32x4d_fpn_1x.pyから
-    keep_all_stages=False
-    )
+    keep_all_stages=False)
     # soft-nms is also supported for rcnn testing
     # e.g., nms=dict(type='soft_nms', iou_thr=0.5, min_score=0.05)
 # dataset settings
-dataset_type = "CocoDataset"
-data_root = "/home/honda/Pedestron_cuda11/datasets/Wider_challenge/"
+dataset_type = 'CocoDataset'
+#data_root = 'datasets/CityPersons/'
+data_root = '/content/drive/MyDrive/Pedestrian/datasets/CityPersons/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
-#num_cpu = mp.cpu_count()
 data = dict(
-    imgs_per_gpu=1,
-    #workers_per_gpu=2,
-    workers_per_gpu= 10,
+    imgs_per_gpu=2,
+    workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=(data_root + "ad_train.json", data_root + "sur_train.json"),
-        img_prefix=(data_root + "train_images/", data_root + "train_images/"),
+        ann_file=data_root + 'train.json',
+        img_prefix=data_root,
         img_scale=(1333, 800),
         img_norm_cfg=img_norm_cfg,
         size_divisor=64,
         flip_ratio=0.5,
         with_mask=False,
         with_crowd=True,
-        with_label=True,
-        extra_aug=dict(
-            photo_metric_distortion=dict(
-                brightness_delta=180,
-                contrast_range=(0.5, 1.5),
-                saturation_range=(0.5, 1.5),
-                hue_delta=18,
-            ),
-            random_crop=dict(
-                min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
-                min_crop_size=0.1,
-            ),
-        ),
-    ),
+        with_label=True),
     #val=dict(
     #    type=dataset_type,
-    #    ann_file=data_root + 'annotations/instances_val2017.json',
-    #    img_prefix=data_root + 'val2017/',
+    #    #ann_file=data_root + 'annotations/instances_val2017.json',
+    #    ann_file=data_root + 'val_gt_for_mmdetction.json',
+    #    #img_prefix=data_root + 'val2017/',
+    #    img_prefix=data_root + 'leftImg8bit_trainvaltest/leftImg8bit/val_all_in_folder/',
     #    img_scale=(1333, 800),
     #    img_norm_cfg=img_norm_cfg,
-    #   size_divisor=32,
-    #   flip_ratio=0,
-    #   with_mask=False,
-    #   with_crowd=True,
-    #   with_label=True),
-test=dict(
+    #    size_divisor=32,
+    #    flip_ratio=0,
+    #    with_mask=False,
+    #    with_crowd=True,
+    #    with_label=True),
+    test=dict(
         type=dataset_type,
-        ann_file=data_root + "val.json",
-        img_prefix=data_root + "val_data/",
+        ann_file=data_root + 'val_gt_for_mmdetction.json',
+        img_prefix=data_root + 'leftImg8bit_trainvaltest/leftImg8bit/val_all_in_folder/',
         img_scale=(1333, 800),
         img_norm_cfg=img_norm_cfg,
         size_divisor=64,
         flip_ratio=0,
         with_mask=False,
         with_label=False,
-        test_mode=True,
-    ),
-)
-
-#evaluation = dict(interval=1, metric='bbox')
+        test_mode=True))
 # optimizer
 mean_teacher=True
-optimizer = dict(type='SGD', lr=0.00125, momentum=0.9, weight_decay=0.0001)
-optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2),mean_teacher = dict(alpha=0.999))
 # learning policy
 lr_config = dict(
     policy='step',
@@ -275,16 +237,15 @@ checkpoint_config = dict(interval=1)
 log_config = dict(
     interval=50,
     hooks=[
-        #dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')
-    ],
-)
+        dict(type='TextLoggerHook'),
+        # dict(type='TensorboardLoggerHook')
+    ])
 # yapf:enable
 # runtime settings
-total_epochs = 22
+total_epochs = 30
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = "/home/honda/Pedestron_cuda11/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_64x4d_fpn_1x_lr000125_gpus1"
+work_dir = './work_dirs/cascade_rcnn_db_x152_64x4d_fpn_1x_30'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]

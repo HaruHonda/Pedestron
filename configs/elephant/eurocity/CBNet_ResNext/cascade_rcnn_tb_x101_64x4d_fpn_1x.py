@@ -105,16 +105,16 @@ train_cfg = dict(
             pos_fraction=0.5,
             neg_pos_ub=-1,
             add_gt_as_proposals=False),
-        allowed_border=0,
-        pos_weight=-1,
-        debug=False),
-    rpn_proposal=dict(
-        nms_across_levels=False,
-        nms_pre=2000,
-        nms_post=2000,
-        max_num=2000,
-        nms_thr=0.7,
-        min_bbox_size=0),
+            allowed_border=0,
+            pos_weight=-1,
+            debug=False),
+        rpn_proposal=dict(
+            nms_across_levels=False,
+            nms_pre=2000,
+            nms_post=2000,
+            max_num=2000,
+            nms_thr=0.7,
+            min_bbox_size=0),
     rcnn=[
         dict(
             assigner=dict(
@@ -152,17 +152,22 @@ train_cfg = dict(
                 pos_iou_thr=0.7,
                 neg_iou_thr=0.7,
                 min_pos_iou=0.7,
-                ignore_iof_thr=-1),
+                ignore_iof_thr=-1,
+                #ignore_iof_thr=0.7,
+            ),
             sampler=dict(
                 type='RandomSampler',
                 num=512,
                 pos_fraction=0.25,
                 neg_pos_ub=-1,
-                add_gt_as_proposals=True),
+                add_gt_as_proposals=True
+            ),
             pos_weight=-1,
-            debug=False)
-        ],
-        stage_loss_weights=[1, 0.5, 0.25])
+            debug=False,
+        ),
+    ],
+    stage_loss_weights=[1, 0.5, 0.25]
+)
 test_cfg = dict(
     rpn=dict(
         nms_across_levels=False,
@@ -172,22 +177,24 @@ test_cfg = dict(
         nms_thr=0.7,
         min_bbox_size=0),
     rcnn=dict(
-        score_thr=0.05, nms=dict(type='nms', iou_thr=0.5), max_per_img=100),
+        score_thr=0.05,
+        nms=dict(type='nms', iou_thr=0.5),
+        max_per_img=100),
     # 下記一行追加 pedestron/config/cascade_rcnn_x10_32x4d_fpn_1x.pyから
     keep_all_stages=False)
     # soft-nms is also supported for rcnn testing
     # e.g., nms=dict(type='soft_nms', iou_thr=0.5, min_score=0.05)
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '/content/drive/MyDrive/Pedestrian/datasets/CityPersons/'
+data_root = '/home/honda/datasets/EuroCity/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
-    imgs_per_gpu=2,
-    workers_per_gpu=2,
+    imgs_per_gpu=1,
+    workers_per_gpu=6,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'train.json',
+        ann_file=data_root + 'day_train_all.json',
         img_prefix=data_root,
         img_scale=(1333, 800),
         img_norm_cfg=img_norm_cfg,
@@ -195,7 +202,18 @@ data = dict(
         flip_ratio=0.5,
         with_mask=False,
         with_crowd=True,
-        with_label=True),
+        with_label=True,
+        extra_aug=dict(
+            photo_metric_distortion=dict(
+                brightness_delta=180,
+                contrast_range=(0.5, 1.5),
+                saturation_range=(0.5, 1.5),
+                hue_delta=18),
+            random_crop=dict(
+                min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+                min_crop_size=0.1),
+        ),
+    ),
     #val=dict(
     #    type=dataset_type,
     #    ann_file=data_root + 'annotations/instances_val2017.json',
@@ -209,20 +227,22 @@ data = dict(
     #   with_label=True),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'val_gt_for_mmdetction.json',
-        img_prefix=data_root + 'leftImg8bit_trainvaltest/leftImg8bit/val_all_in_folder/',
+        ann_file=data_root + 'day_val.json',
+        img_prefix=data_root,
         img_scale=(1333, 800),
         img_norm_cfg=img_norm_cfg,
         size_divisor=64,
         flip_ratio=0,
         with_mask=False,
         with_label=False,
-        test_mode=True))
+        test_mode=True
+    ),
+)
 #evaluation = dict(interval=1, metric='bbox')
 # optimizer
 mean_teacher=True
-optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
-optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+optimizer = dict(type='SGD', lr=0.0025, momentum=0.9, weight_decay=0.0001)
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2),mean_teacher = dict(alpha=0.999))
 # learning policy
 lr_config = dict(
     policy='step',
@@ -236,14 +256,16 @@ log_config = dict(
     interval=50,
     hooks=[
         dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
+        dict(type='TensorboardLoggerHook')
     ])
 # yapf:enable
 # runtime settings
-total_epochs = 30
+total_epochs = 20
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = '/content/drive/MyDrive/cascade_rcnn_tb_x101_64x4d_fpn_1x_30'
+work_dir = '/home/honda/work_dirs/eurocity_cascade_rcnn_tb_x101_64x4d_fpn_1x_wp_finetune2'
 load_from = None
+load_from = "/home/honda/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_64x4d_fpn_1x_lr002_gpus1/stu_epoch_15.pth"
+#load_from = '/home/honda/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_64x4d_fpn_1x_lr002_gpus1/stu_epoch_15.pth'
 resume_from = None
 workflow = [('train', 1)]

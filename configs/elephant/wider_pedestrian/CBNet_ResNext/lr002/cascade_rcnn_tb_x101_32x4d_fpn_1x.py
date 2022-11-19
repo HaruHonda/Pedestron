@@ -181,7 +181,7 @@ test_cfg = dict(
     # e.g., nms=dict(type='soft_nms', iou_thr=0.5, min_score=0.05)
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = "/home/honda/Pedestron_cuda11/datasets/Wider_challenge/"
+data_root = "/home/honda/datasets/Wider_challenge/"
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
@@ -239,7 +239,7 @@ data = dict(
 # optimizer
 mean_teacher=True
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
-optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2),mean_teacher=dict(alpha=0.999))
 # learning policy
 lr_config = dict(
     policy='step',
@@ -252,7 +252,7 @@ checkpoint_config = dict(interval=1)
 log_config = dict(
     interval=50,
     hooks=[
-        # dict(type='TextLoggerHook'),
+        dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
     ])
 # yapf:enable
@@ -260,7 +260,7 @@ log_config = dict(
 total_epochs = 20
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = "/home/honda/Pedestron_cuda11/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_32x4d_fpn_1x_step_lr002_gpus1_fp16"
+work_dir = "/home/honda/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_32x4d_fpn_1x_step_lr002_gpus1"
 load_from = None
 #resume_from = "/home/honda/Pedestron_cuda11/work_dirs/WiderPedestrian_cascade_rcnn_tb_x101_32x4d_fpn_1x_step_lr002_gpus1/epoch_9.pth"
 resume_from = None

@@ -232,8 +232,8 @@ data = dict(
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'day_train_all.json',
- 	img_prefix=data_root,
-	img_scale=[(1216, 608),(2048, 1024)],
+        img_prefix=data_root,
+        img_scale=[(1216, 608),(2048, 1024)],
         multiscale_mode='range',
         img_norm_cfg=img_norm_cfg,
         size_divisor=32,
@@ -242,22 +242,27 @@ data = dict(
         with_crowd=True,
         with_label=True,
         extra_aug=dict(
-            photo_metric_distortion=dict(brightness_delta=180, contrast_range=(0.5, 1.5),
-                 saturation_range=(0.5, 1.5), hue_delta=18),
-             random_crop=dict(min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), min_crop_size=0.1),
+            photo_metric_distortion=dict(
+                brightness_delta=180,
+                contrast_range=(0.5, 1.5),
+                saturation_range=(0.5, 1.5),
+                hue_delta=18),
+             random_crop=dict(
+                 min_ious=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+                 min_crop_size=0.1),
          ),
     ),
     test=dict(
-        type=dataset_type,
+    type=dataset_type,
 	ann_file=data_root + 'day_val.json',
-        img_prefix=data_root,
-        img_scale=(1920, 1024),
-        img_norm_cfg=img_norm_cfg,
-        size_divisor=32,
-        flip_ratio=0,
-        with_mask=False,
-        with_label=False,
-        test_mode=True))
+    img_prefix=data_root,
+    img_scale=(1920, 1024),
+    img_norm_cfg=img_norm_cfg,
+    size_divisor=32,
+    flip_ratio=0,
+    with_mask=False,
+    with_label=False,
+    test_mode=True))
 # optimizer
 mean_teacher=True
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
